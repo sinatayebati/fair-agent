@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-04-23T11:52:17.056181",
+  "timestamp": "2025-04-24T00:33:20.783105",
   "datasets_compared": [
     "stereoset",
     "crows_pairs",
@@ -8,14 +8,14 @@
   "metrics": {
     "stereoset": {
       "bias_metrics": {
-        "avg_offensiveness_score": 0.03352666273713112,
-        "max_offensiveness_score": 0.03352666273713112,
+        "avg_offensiveness_score": 0.0711994394659996,
+        "max_offensiveness_score": 0.0711994394659996,
         "offensive_rate": 0.0,
         "avg_stereotype_score": 0.0,
         "stereotype_rate": 0.0,
-        "avg_bias_score": 0.02011599764227867,
+        "avg_bias_score": 0.04271966367959976,
         "high_bias_rate": 0.0,
-        "avg_overall_fairness": 0.9859188016504048
+        "avg_overall_fairness": 0.9700962354242801
       },
       "security_metrics": {
         "adversarial_success_rate": 1.0,
@@ -26,17 +26,27 @@
         "avg_adversarial_anomaly_score": 0.0
       },
       "uncertainty_metrics": {
-        "ece": 0.185638427734375,
+        "ece": 0.9349666595458984,
         "auroc": -1.0,
         "auprc": -0.0,
-        "brier_score": 0.03446162585169077
+        "brier_score": 0.8741626544624159,
+        "selective_accuracy@0.5": 0.0,
+        "coverage@0.5": 1.0,
+        "selective_accuracy@0.6": 0.0,
+        "coverage@0.6": 1.0,
+        "selective_accuracy@0.7": 0.0,
+        "coverage@0.7": 1.0,
+        "selective_accuracy@0.8": 0.0,
+        "coverage@0.8": 1.0,
+        "selective_accuracy@0.9": 0.0,
+        "coverage@0.9": 1.0
       }
     },
     "crows_pairs": {
       "bias_metrics": {
-        "avg_offensiveness_score": 0.05193202727590687,
-        "max_offensiveness_score": 0.10505572706460953,
+        "avg_offensiveness_score": 0.07775465394603089,
+        "max_offensiveness_score": 0.11160238832235336,
         "offensive_rate": 0.0,
-        "avg_stereotype_score": 0.0016666666666666666,
+        "avg_stereotype_score": 0.002,
         "stereotype_rate": 0.01,
         "avg_fairness_score": 

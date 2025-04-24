@@ -13,6 +13,10 @@ import time
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 import matplotlib.pyplot as plt
+from dotenv import load_dotenv
+
+# Load environment variables for API keys
+load_dotenv()
 
 from src.framework import AIFramework
 from src.evaluation import (
@@ -31,11 +35,12 @@ logger = logging.getLogger('Experiments')
 
 
 def run_dataset_comparison_experiment(
-    model_name: str = "distilgpt2",
+    model_name: str = "gpt-4.1-nano",
     datasets: List[str] = None,
     uncertainty_method: str = "ensemble",
     output_dir: str = "./experiment_results",
-    visualize: bool = True
+    visualize: bool = True,
+    use_openai: bool = True
 ):
     """
     Run a comprehensive dataset comparison experiment.
@@ -46,6 +51,7 @@ def run_dataset_comparison_experiment(
         uncertainty_method: Method for uncertainty quantification
         output_dir: Output directory for results
         visualize: Whether to generate visualizations
+        use_openai: Whether to use OpenAI API (True) or Hugging Face (False)
         
     Returns:
         Dictionary with experiment results
@@ -59,6 +65,7 @@ def run_dataset_comparison_experiment(
         
     logger.info(f"Running dataset comparison experiment across {len(datasets)} datasets")
     logger.info(f"Model: {model_name}, Uncertainty method: {uncertainty_method}")
+    logger.info(f"Using {'OpenAI API' if use_openai else 'Hugging Face'}")
     
     start_time = time.time()
     
@@ -67,7 +74,8 @@ def run_dataset_comparison_experiment(
         framework = AIFramework(
             model_name=model_name,
             uncertainty_method=uncertainty_method,
-            use_langchain=False
+            use_langchain=False,
+            use_openai=use_openai
         )
     except Exception as e:
         logger.error(f"Failed to initialize framework: {e}")
@@ -108,6 +116,7 @@ def run_dataset_comparison_experiment(
         "uncertainty_method": uncertainty_method,
         "datasets": datasets,
         "runtime_seconds": runtime,
+        "model_provider": "OpenAI API" if use_openai else "Hugging Face",
         "output_files": {
             "comparison_report": comparison_path,
             "visualizations_dir": os.path.join(output_dir, "visualizations") if visualize else None
@@ -133,7 +142,8 @@ def run_model_comparison_experiment(
     models: List[str] = None,
     dataset: str = "stereoset",
     uncertainty_method: str = "ensemble",
-    output_dir: str = "./model_comparison_results"
+    output_dir: str = "./model_comparison_results",
+    use_openai: bool = True
 ):
     """
     Compare multiple models on the same dataset.
@@ -143,6 +153,7 @@ def run_model_comparison_experiment(
         dataset: Dataset to use for comparison
         uncertainty_method: Uncertainty quantification method
         output_dir: Output directory for results
+        use_openai: Whether to use OpenAI API (True) or Hugging Face (False)
         
     Returns:
         Dictionary with experiment results
@@ -152,10 +163,14 @@ def run_model_comparison_experiment(
     
     # Default models if not specified
     if not models:
-        models = ["distilgpt2", "gpt2", "gpt2-medium"]
+        if use_openai:
+            models = ["gpt-4.1-nano", "gpt-4.1-mini"]
+        else:
+            models = ["distilgpt2", "gpt2", "gpt2-medium"]
         
     logger.info(f"Running model comparison experiment with {len(models)} models")
     logger.info(f"Dataset: {dataset}, Uncertainty method: {uncertainty_method}")
+    logger.info(f"Using {'OpenAI API' if use_openai else 'Hugging Face'}")
     
     start_time = time.time()
     
@@ -171,7 +186,8 @@ def run_model_comparison_experiment(
             framework = AIFramework(
                 model_name=model_name,
                 uncertainty_method=uncertainty_method,
-                use_langchain=False
+                use_langchain=False,
+                use_openai=use_openai
             )
             
             # Run bias evaluation
@@ -200,7 +216,8 @@ def run_model_comparison_experiment(
                 "bias_metrics": bias_metrics,
                 "security_metrics": security_metrics,
                 "uncertainty_metrics": uncertainty_metrics,
-                "model": model_name
+                "model": model_name,
+                "model_provider": "OpenAI API" if use_openai else "Hugging Face"
             }
             
             model_results_path = os.path.join(model_dir, "evaluation_results.json")
@@ -236,6 +253,7 @@ def run_model_comparison_experiment(
         "dataset": dataset,
         "uncertainty_method": uncertainty_method,
         "runtime_seconds": runtime,
+        "model_provider": "OpenAI API" if use_openai else "Hugging Face",
         "models_evaluated": len([m for m, r in results.items() if r["status"] == "success"])
     }
     
@@ -382,14 +400,14 @@ def main():
     
     parser.add_argument(
         "--model",
-        default="distilgpt2",
-        help="Model to use (default: distilgpt2)"
+        default="gpt-4.1-nano",
+        help="Model to use (default: gpt-4.1-nano)"
     )
     
     parser.add_argument(
         "--models",
         nargs="+",
-        default=["distilgpt2", "gpt2"],
+        default=None,
         help="List of models to compare (for model_comparison experiment)"
     )
     
@@ -419,7 +437,20 @@ def main():
         help="Disable visualization generation"
     )
     
+    parser.add_argument(
+        "--use-huggingface",
+        action="store_true",
+        help="Use Hugging Face models instead of OpenAI API"
+    )
+    
     args = parser.parse_args()
+    
+    # Determine if we should use OpenAI or Hugging Face
+    use_openai = not args.use_huggingface
+    
+    # If using Hugging Face and no model specified, use a default HF model
+    if args.use_huggingface and args.model == "gpt-4.1-nano":
+        args.model = "distilgpt2"
     
     # Run the selected experiment
     if args.experiment == "dataset_comparison":
@@ -428,14 +459,16 @@ def main():
             datasets=args.datasets,
             uncertainty_method=args.uncertainty,
             output_dir=args.output_dir,
-            visualize=not args.no_visualize
+            visualize=not args.no_visualize,
+            use_openai=use_openai
         )
     elif args.experiment == "model_comparison":
         result = run_model_comparison_experiment(
             models=args.models,
             dataset=args.datasets[0] if args.datasets else "stereoset",
             uncertainty_method=args.uncertainty,
-            output_dir=args.output_dir
+            output_dir=args.output_dir,
+            use_openai=use_openai
         )
     else:
         logger.error(f"Unknown experiment type: {args.experiment}")

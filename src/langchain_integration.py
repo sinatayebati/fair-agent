@@ -13,6 +13,10 @@ import logging
 from typing import Dict, List, Any, Optional, Union, Callable, ClassVar
 import os
 import json
+from dotenv import load_dotenv
+
+# Load environment variables for API keys
+load_dotenv()
 
 # Import LangChain components with updated imports
 from langchain.chains import LLMChain, SequentialChain, TransformChain
@@ -71,6 +75,27 @@ class LangChainBridge:
         Returns:
             LangChain compatible LLM object
         """
+        # Check if we should directly use a native LangChain OpenAI integration
+        if hasattr(self.llm_wrapper, 'use_openai') and getattr(self.llm_wrapper, 'use_openai', False):
+            # If OpenAI is being used, return a LangChain OpenAI wrapper instead of custom adapter
+            try:
+                # Check if we can import the OpenAI LangChain class
+                from langchain_openai import ChatOpenAI
+                
+                # Get the model name from our wrapper
+                model_name = getattr(self.llm_wrapper, 'model_name', 'gpt-4.1-nano')
+                
+                # Initialize with the API key from environment
+                return ChatOpenAI(
+                    model_name=model_name,
+                    temperature=0.7,
+                    api_key=os.environ.get("OPENAI_API_KEY")
+                )
+            except ImportError:
+                logger.warning("langchain_openai not found, falling back to custom adapter")
+                # Fall back to custom adapter if imports fail
+                pass
+        
         # Use the appropriate LLM base class based on LangChain version
         try:
             from langchain.llms.base import LLM

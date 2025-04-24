@@ -2,9 +2,15 @@
 langfair/
 langfair/*
 
-# Ignore the env directory
+# Ignore the dataset directory
+dataset/
+dataset/*
+
+# Ignore environment directories and files
 env/
 .venv/
+.env/
+.env
 
 # Python
 __pycache__/
@@ -12,7 +18,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
 build/
 develop-eggs/
 dist/

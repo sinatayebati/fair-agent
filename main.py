@@ -3,12 +3,16 @@ import os
 import argparse
 import logging
 import importlib
+from dotenv import load_dotenv
 from src.evaluation import (
     run_evaluation, evaluate_bias, evaluate_security, 
     evaluate_uncertainty, evaluate_overall_performance,
     create_evaluation_report, compare_datasets_evaluation
 )
 from src.datasets import load_bias_data, load_adversarial_data, load_uncertainty_data
+
+# Load environment variables for API keys
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(
@@ -248,8 +252,8 @@ def main():
     parser = argparse.ArgumentParser(description="AI Framework Demonstration and Evaluation")
     parser.add_argument(
         "--model", 
-        default="distilgpt2", 
-        help="Model name to use (default: distilgpt2)"
+        default="gpt-4.1-nano", 
+        help="Model name to use (default: gpt-4.1-nano)"
     )
     parser.add_argument(
         "--uncertainty", 
@@ -278,8 +282,26 @@ def main():
         action="store_true",
         help="Run Hugging Face authentication setup before starting"
     )
+    parser.add_argument(
+        "--use-huggingface",
+        action="store_true",
+        help="Use Hugging Face models instead of OpenAI API"
+    )
     
     args = parser.parse_args()
+    
+    # Determine if we should use OpenAI or Hugging Face
+    use_openai = not args.use_huggingface
+    
+    # If using Hugging Face and no model specified, use a default HF model
+    if args.use_huggingface and args.model == "gpt-4.1-nano":
+        args.model = "distilgpt2"
+        
+    # Check for OpenAI API key if using OpenAI
+    if use_openai and not os.environ.get("OPENAI_API_KEY"):
+        logger.warning("OPENAI_API_KEY not found in environment. Please set this variable.")
+        logger.warning("You can add it to your .env file or set it in your environment.")
+        return 1
     
     # Check authentication if requested
     if args.auth:
@@ -290,7 +312,8 @@ def main():
             logger.warning("huggingface_auth.py not found. Skipping authentication.")
     
     logger.info(f"Starting AI Framework with model: {args.model}, "
-               f"uncertainty method: {args.uncertainty}")
+               f"uncertainty method: {args.uncertainty}, "
+               f"using {'OpenAI API' if use_openai else 'Hugging Face'}")
     
     # Initialize the framework with better error handling
     try:
@@ -301,7 +324,8 @@ def main():
         framework = AIFramework(
             model_name=args.model,
             uncertainty_method=args.uncertainty,
-            use_langchain=not args.no_langchain
+            use_langchain=not args.no_langchain,
+            use_openai=use_openai
         )
     except ImportError as e:
         logger.error(f"Import error initializing framework: {e}")
@@ -318,7 +342,8 @@ def main():
                     framework = AIFramework(
                         model_name=args.model,
                         uncertainty_method=args.uncertainty,
-                        use_langchain=False
+                        use_langchain=False,
+                        use_openai=use_openai
                     )
                 except Exception as inner_e:
                     logger.error(f"Failed to initialize framework without LangChain: {inner_e}")

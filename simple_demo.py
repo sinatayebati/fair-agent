@@ -6,6 +6,12 @@ This script provides a basic test of the core functionality.
 import logging
 import json
 import importlib
+import os
+import argparse
+from dotenv import load_dotenv
+
+# Load environment variables for API keys
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(
@@ -15,7 +21,36 @@ logging.basicConfig(
 logger = logging.getLogger('SimpleDemo')
 
 def main():
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description="Simple AI Framework Demo")
+    parser.add_argument(
+        "--model",
+        default="gpt-4.1-nano",
+        help="Name of the model to use (default: gpt-4.1-nano)"
+    )
+    parser.add_argument(
+        "--use-huggingface",
+        action="store_true",
+        help="Use Hugging Face models instead of OpenAI API"
+    )
+    
+    args = parser.parse_args()
+    
+    # Determine if we should use OpenAI or Hugging Face
+    use_openai = not args.use_huggingface
+    
+    # If using Hugging Face and no model specified, use a default HF model
+    if args.use_huggingface and args.model == "gpt-4.1-nano":
+        args.model = "distilgpt2"
+        
+    # Check for OpenAI API key if using OpenAI
+    if use_openai and not os.environ.get("OPENAI_API_KEY"):
+        logger.error("OPENAI_API_KEY not found in environment. Please set this variable.")
+        logger.error("You can add it to your .env file or set it in your environment.")
+        return 1
+    
     logger.info("Starting AI Framework Simple Demonstration")
+    logger.info(f"Using model: {args.model} via {'OpenAI API' if use_openai else 'Hugging Face'}")
     
     try:
         # Import framework with explicit no_langchain
@@ -23,9 +58,10 @@ def main():
         
         # Initialize the framework with LangChain disabled
         framework = AIFramework(
-            model_name="distilgpt2",
+            model_name=args.model,
             uncertainty_method="ensemble",
-            use_langchain=False
+            use_langchain=False,
+            use_openai=use_openai
         )
         
         logger.info("AI Framework initialized successfully")

@@ -6,6 +6,10 @@ This helps address the 401 Unauthorized errors when accessing datasets.
 import os
 import logging
 from getpass import getpass
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 logger = logging.getLogger('AI_Framework')
 
@@ -20,7 +24,7 @@ def setup_huggingface_authentication():
         from huggingface_hub import login
         
         # Check if token is already set in environment
-        token = os.environ.get("HUGGINGFACE_TOKEN") or os.environ.get("HF_TOKEN")
+        token = os.environ.get("HUGGINGFACE_API_KEY") or os.environ.get("HUGGINGFACE_TOKEN") or os.environ.get("HF_TOKEN")
         
         if token:
             logger.info("Hugging Face token found in environment variables")
@@ -54,7 +58,7 @@ def setup_huggingface_authentication():
                 save_choice = input("Save this token for future sessions? (y/n): ").lower()
                 if save_choice in ['y', 'yes']:
                     with open(os.path.expanduser("~/.huggingface"), "w") as f:
-                        f.write(f"export HUGGINGFACE_TOKEN={token}\n")
+                        f.write(f"export HUGGINGFACE_API_KEY={token}\n")
                     print("Token saved to ~/.huggingface")
                     print("You can add this to your shell profile by running:")
                     print("echo 'source ~/.huggingface' >> ~/.bashrc  # or ~/.zshrc")
