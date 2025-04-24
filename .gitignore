@@ -2,6 +2,10 @@
 langfair/
 langfair/*
 
+# Ignore the env directory
+env/
+.venv/
+
 # Python
 __pycache__/
 *.py[cod]

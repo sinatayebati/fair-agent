@@ -14,7 +14,7 @@ This framework provides a robust solution for enhancing AI visibility, fairness,
 
 ## Installation
 
-### Setting Up the Conda Environment
+### Setting Up with uv
 
 1. Clone this repository:
    ```bash
@@ -22,13 +22,25 @@ This framework provides a robust solution for enhancing AI visibility, fairness,
    cd ai_framework
    ```
 
-2. Create and activate the conda environment:
+2. Install uv if you don't have it already:
    ```bash
-   conda env create -f environment.yml
-   conda activate ai_framework
+   pip install uv
    ```
 
-3. Install additional dependencies:
+3. Create and activate a virtual environment:
+   ```bash
+   uv venv
+   source .venv/bin/activate  # On Unix/macOS
+   # OR
+   .venv\Scripts\activate  # On Windows
+   ```
+
+4. Install dependencies using uv:
+   ```bash
+   uv pip install -e .
+   ```
+
+5. Install additional dependencies:
    ```bash
    # Download spaCy English model
    python -m spacy download en_core_web_sm
@@ -55,13 +67,10 @@ If you don't authenticate, the framework will fall back to using local examples 
 
 ### Troubleshooting Installation
 
-If you encounter issues with the `conformal` package, you can modify `environment.yml` to use `nonconformist` as an alternative:
+If you encounter issues with the `conformal` package, you can install `nonconformist` as an alternative:
 
-```yaml
-- pip:
-    # ...other packages...
-    - nonconformist>=2.1.0  # Alternative to conformal
-    # ...other packages...
+```bash
+uv pip install nonconformist>=2.1.0
 ```
 
 If LangChain integration fails, you can run the framework without it using the `--no-langchain` flag.
@@ -83,8 +92,8 @@ ai_framework/
 │   └── uncertainty_quantification.py  # Uncertainty estimation methods
 ├── main.py                        # Main CLI interface
 ├── simple_demo.py                 # Simplified demo without LangChain
-├── environment.yml                # Conda environment specification
-└── requirements.txt               # Pip requirements
+├── pyproject.toml                 # Project configuration and dependencies
+└── README.md                      # This file
 ```
 
 ## Usage
