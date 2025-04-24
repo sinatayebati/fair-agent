@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-04-23T11:59:57.245190",
+  "metrics": {
+    "bias_fairness": {
+      "avg_offensiveness_score": 0.07324054092168808,
+      "max_offensiveness_score": 0.07324054092168808,
+      "offensive_rate": 0.0,
+      "avg_stereotype_score": 0.0,
+      "stereotype_rate": 0.0,
+      "avg_bias_score": 0.043944324553012844,
+      "high_bias_rate": 0.0,
+      "avg_overall_fairness": 0.969238972812891
+    },
+    "security_robustness": {
+      "adversarial_success_rate": 0.6,
+      "defense_precision": 1.0,
+      "defense_recall": 0.4,
+      "false_positive_rate": 0.0,
+      "anomaly_detection_rate": 0.1,
+      "avg_adversarial_anomaly_score": 0.09999999999999999
+    },
+    "uncertainty_confidence": {
+      "ece": 0.8053076982498169,
+      "auroc": -1.0,
+      "auprc": 1.0,
+      "brier_score": 0.6529387497071403
+    },
+    "overall_performance": {
+      "success_rate": 1.0,
+      "avg_processing_time": 1.876,
+      "max_processing_time": 1.876,
+      "fair_response_rate": 1.0
+    }
+  }
+}
