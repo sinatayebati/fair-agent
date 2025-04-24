@@ -29,18 +29,11 @@ This framework provides a robust solution for enhancing AI visibility, fairness,
 
 3. Create and activate a virtual environment:
    ```bash
-   uv venv
-   source .venv/bin/activate  # On Unix/macOS
-   # OR
-   .venv\Scripts\activate  # On Windows
+   uv sync
+   source .venv/bin/activate
    ```
 
-4. Install dependencies using uv:
-   ```bash
-   uv pip install -e .
-   ```
-
-5. Install additional dependencies:
+4. Install additional dependencies:
    ```bash
    # Download spaCy English model
    python -m spacy download en_core_web_sm
@@ -72,8 +65,6 @@ If you encounter issues with the `conformal` package, you can install `nonconfor
 ```bash
 uv pip install nonconformist>=2.1.0
 ```
-
-If LangChain integration fails, you can run the framework without it using the `--no-langchain` flag.
 
 ## Project Structure
 
