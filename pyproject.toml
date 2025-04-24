@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai_framework"
+version = "0.1.0"
+description = "A comprehensive framework for enhancing large language models with bias/fairness analysis, uncertainty quantification, and adversarial defense."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+dependencies = [
+    "transformers[torch]>=4.30.0",
+    "torch>=2.0.0",
+    "torchvision",
+    "scikit-learn>=1.2.0",
+    "numpy>=1.22.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.6.0",
+    "nltk>=3.8.1",
+    "spacy>=3.5.0",
+    "tqdm>=4.65.0",
+    "requests>=2.28.0",
+    "langchain>=0.0.312",
+    "langchain-core>=0.1.0",
+    "langfair>=0.5.2",
+    "datasets>=2.12.0",
+    "evaluate>=0.4.0",
+    "conformal>=0.1.0",
+    "mapie>=0.7.0",
+    "sentence-transformers>=2.2.0",
+    "huggingface-hub>=0.16.0",
+    "accelerate>=0.21.0",
+    "tensorboard>=2.12.0",
+    "ipython",
+    "pytest",
+    "black",
+    "jupyter",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "pytest",
+    "jupyter",
+]
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ["py39"] 
